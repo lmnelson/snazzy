@@ -1,0 +1,30 @@
+.example {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 400px;
+  height: 200px;
+  font-size: 16px;
+  background: purple;
+  color: white;
+  margin: 10px auto;
+}
+
+.snazzy {
+  opacity: 0;
+  position: relative;
+  left: -200px;
+}
+
+.reveal {
+  left: 0;
+}
+
+.fadeIn {
+  opacity: 1;
+}
+
+.snazzy-enter {
+  opacity: 1;
+  transition: all 2s;
+}
