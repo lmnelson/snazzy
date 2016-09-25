@@ -1,52 +1,60 @@
-//
-// Snazzy
-//
 
-const snazzyTriggerEl = Array.prototype.slice.call(document.querySelectorAll("[data-target^='snazzy']"));
 
-snazzyTriggerEl.map(function(el){
-  const snazzyEvent = el.getAttribute('data-event');
-  const snazzyTarget = el.getAttribute('data-target');
-  el.setAttribute('state', 0);
-  addAnimationEventListeners(snazzyTarget, el);
-  addSnazzyEventListeners(el, snazzyEvent, snazzyTarget);
-});
+const snazzyTriggers = Array.prototype.slice.call(document.querySelectorAll("[data-target^='snazzy']"));
+const snazzyTriggerObjects = [];
 
-function addAnimationEventListeners(snazzyTarget, snazzyTrigger){
-  var snazzyTarget = document.getElementById(snazzyTarget);
-  snazzyTarget.addEventListener("webkitAnimationStart", function(event){
-    this.classList.add('snazzy-enter-active');
-  });
-  snazzyTarget.addEventListener("webkitAnimationEnd", function(event){
-    this.classList.remove('snazzy-enter-active');
+function buildSnazzyTriggerObjects(data){
+  data.map(function(value){
+    snazzyTriggerObjects.push(new initSnazzyTrigger(value));
   });
 }
 
-function addSnazzyEventListeners(el, snazzyEvent, snazzyTarget){
-  el.addEventListener(snazzyEvent, function(){
-    animate(this, snazzyTarget);
+function initSnazzyTrigger(element){
+  this.element = element;
+  this.targetRef = element.getAttribute("data-target");
+  this.eventRef = element.getAttribute("data-event");
+  this.state = setState();
+  addDataEventListener(this);
+  addAnimationEventListeners(this);
+}
+
+function setState(){
+  return 0;
+}
+
+function updateState(object){
+  object.state = 1 - object.state;
+}
+
+function addDataEventListener(object){
+  object.element.addEventListener(object.eventRef, function(){
+    if(object.state == 0){
+      enter(object);
+    } else {
+      leave(object);
+    }
+  });
+}
+
+function addAnimationEventListeners(object){
+  var element = document.getElementById(object.targetRef);
+  element.addEventListener("webkitAnimationEnd", function(){
+    if(object.state == 0){
+      this.classList.remove("snazzy-leave", "snazzy-enter");
+    }
   }, false);
 }
 
-
-function animate(self, target){
-  var targetElement = document.getElementById(target);
-  if(self.getAttribute('state') == 0){
-    self.setAttribute('state', 1);
-    enterAnimation(targetElement);
-  } else {
-    self.setAttribute('state', 0);
-    leaveAnimation(targetElement);
-  }
+function enter(object){
+  document.getElementById(object.targetRef).classList.add("snazzy-enter");
+  updateState(object);
 }
 
-function enterAnimation(target){
-  target.classList.add('snazzy-enter');
-  target.classList.remove('snazzy-leave');
+function leave(object){
+  var element = document.getElementById(object.targetRef);
+  element.classList.add("snazzy-leave");
+  updateState(object);
 }
 
-function leaveAnimation(target){
-  target.classList.remove('snazzy-enter');
-  target.classList.add('snazzy-leave');
-}
+buildSnazzyTriggerObjects(snazzyTriggers);
 
